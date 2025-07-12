@@ -21,13 +21,22 @@ app.post('/sms', async (req, res) => {
 });
 
 async function getLLMReply(message, sessionId) {
-  // Replace with your Retell or OpenAI call
-  const response = await axios.post('https://your-retell-agent-endpoint', {
-    message,
-    sessionId,
-  });
+  try {
+    const response = await axios.post('https://api.retellai.com/v1/message', {
+      message,
+      session_id: sessionId
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RETELL_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-  return response.data.reply;
+    return response.data.reply || "Hmm 🤔 I need a minute to think about that...";
+  } catch (error) {
+    console.error('Retell API error:', error.response?.data || error.message);
+    return "Oops! Something went wrong with my brain 🧠";
+  }
 }
 
 app.listen(3000, () => {
