@@ -38,7 +38,24 @@ async function getLLMReply(message, sessionId) {
     return "Oops! Something went wrong with my brain 🧠";
   }
 }
+app.post('/voice', (req, res) => {
+  const response = new twiml.VoiceResponse();
 
+  response.say(
+    {
+      voice: 'Polly.Joanna', // AWS Polly voice via Twilio
+      language: 'en-US'
+    },
+    'Hey there sugar! What can I help you with today?'
+  );
+
+  response.pause({ length: 2 });
+
+  response.say('You still there, sweetie?');
+
+  res.type('text/xml');
+  res.send(response.toString());
+});
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
