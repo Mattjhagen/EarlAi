@@ -46,7 +46,7 @@ app.post('/voice', (req, res) => {
       voice: 'Polly.Joanna', // AWS Polly voice via Twilio
       language: 'en-US'
     },
-    'Hey there sugar! What can I help you with today?'
+    'Hey whats going on?'
   );
 
   response.pause({ length: 2 });
