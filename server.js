@@ -6,48 +6,49 @@ const { twiml } = require('twilio');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// 🔥 SMS Webhook
+// ✅ SMS Handler
 app.post('/sms', async (req, res) => {
   const incomingMsg = req.body.Body;
   const fromNumber = req.body.From;
 
   const reply = await getLLMReply(incomingMsg, fromNumber);
 
-  const response = new twiml.MessagingResponse();
-  response.message(reply);
+  const smsResponse = new twiml.MessagingResponse();
+  smsResponse.message(reply);
 
   res.type('text/xml');
-  res.send(response.toString());
+  res.send(smsResponse.toString());
 });
 
-// 🔥 Voice Webhook
+// ✅ VOICE Handler (with redirect loop)
 app.post('/voice', (req, res) => {
-  const response = new twiml.VoiceResponse();
+  const voiceResponse = new twiml.VoiceResponse();
 
-  response.say(
+  voiceResponse.say(
     {
       voice: 'Polly.Joanna',
       language: 'en-US'
     },
-    'Hey there, sugar! What can I help you with today?'
+    'Hey there sugar! What can I help you with today?'
   );
 
-  response.pause({ length: 4 });
+  voiceResponse.pause({ length: 2 });
 
-  response.say(
+  voiceResponse.say(
     {
       voice: 'Polly.Joanna'
     },
-    "You still there? I'm waitin' on you, honey."
+    'You still there, sweetie?'
   );
 
-  // 👇 Redirect back to /voice to repeat endlessly
-  response.redirect('/voice');
+  // 🔁 Loop the call to keep them engaged
+  voiceResponse.redirect('/voice');
 
   res.type('text/xml');
-  res.send(response.toString());
+  res.send(voiceResponse.toString());
 });
-// 🧠 LLM Response Handler (Retell)
+
+// ✅ Retell Reply Handler
 async function getLLMReply(message, sessionId) {
   try {
     const response = await axios.post('https://api.retellai.com/v1/message', {
