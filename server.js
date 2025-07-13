@@ -10,6 +10,25 @@ app.post('/sms', async (req, res) => {
   const incomingMsg = req.body.Body;
   const fromNumber = req.body.From;
 
+  
+app.post('/voice', (req, res) => {
+  const response = new twiml.VoiceResponse();
+
+  response.say(
+    {
+      voice: 'Polly.Joanna', // AWS Polly voice via Twilio
+      language: 'en-US'
+    },
+    'Hey there sugar! What can I help you with today?'
+  );
+
+  response.pause({ length: 2 });
+
+  response.say('You still there, sweetie?');
+
+  res.type('text/xml');
+  res.send(response.toString());
+});
   // Call your Retell agent here (or use OpenAI if you're proxying it)
   const reply = await getLLMReply(incomingMsg, fromNumber);
 
