@@ -29,17 +29,24 @@ app.post('/voice', (req, res) => {
       voice: 'Polly.Joanna',
       language: 'en-US'
     },
-    'Hey there sugar! What can I help you with today?'
+    'Hey there, sugar! What can I help you with today?'
   );
 
-  response.pause({ length: 2 });
+  response.pause({ length: 4 });
 
-  response.say('You still there, sweetie?');
+  response.say(
+    {
+      voice: 'Polly.Joanna'
+    },
+    "You still there? I'm waitin' on you, honey."
+  );
+
+  // 👇 Redirect back to /voice to repeat endlessly
+  response.redirect('/voice');
 
   res.type('text/xml');
   res.send(response.toString());
 });
-
 // 🧠 LLM Response Handler (Retell)
 async function getLLMReply(message, sessionId) {
   try {
